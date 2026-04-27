@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Maruti Swift",
+    "brand": "Maruti Suzuki",
+    "type": "PETROL",
+    "tankCapacity": 37,
+    "batteryCapacity": null,
+    "realWorldRange": 555,
+    "imageUrl": null,
+    "popularityRank": 1
+  },
+  {
+    "name": "Maruti Baleno",
+    "brand": "Maruti Suzuki",
+    "type": "PETROL",
+    "tankCapacity": 37,
+    "batteryCapacity": null,
+    "realWorldRange": 600,
+    "imageUrl": null,
+    "popularityRank": 2
+  },
+  {
+    "name": "Maruti Brezza",
+    "brand": "Maruti Suzuki",
+    "type": "PETROL",
+    "tankCapacity": 48,
+    "batteryCapacity": null,
+    "realWorldRange": 670,
+    "imageUrl": null,
+    "popularityRank": 3
+  },
+  {
+    "name": "Maruti Ertiga",
+    "brand": "Maruti Suzuki",
+    "type": "PETROL",
+    "tankCapacity": 45,
+    "batteryCapacity": null,
+    "realWorldRange": 630,
+    "imageUrl": null,
+    "popularityRank": 4
+  },
+  {
+    "name": "Maruti Dzire",
+    "brand": "Maruti Suzuki",
+    "type": "PETROL",
+    "tankCapacity": 37,
+    "batteryCapacity": null,
+    "realWorldRange": 590,
+    "imageUrl": null,
+    "popularityRank": 5
+  },
+  {
+    "name": "Hyundai Creta Petrol",
+    "brand": "Hyundai",
+    "type": "PETROL",
+    "tankCapacity": 50,
+    "batteryCapacity": null,
+    "realWorldRange": 650,
+    "imageUrl": null,
+    "popularityRank": 6
+  },
+  {
+    "name": "Hyundai Creta Diesel",
+    "brand": "Hyundai",
+    "type": "DIESEL",
+    "tankCapacity": 50,
+    "batteryCapacity": null,
+    "realWorldRange": 850,
+    "imageUrl": null,
+    "popularityRank": 7
+  },
+  {
+    "name": "Hyundai i20",
+    "brand": "Hyundai",
+    "type": "PETROL",
+    "tankCapacity": 37,
+    "batteryCapacity": null,
+    "realWorldRange": 590,
+    "imageUrl": null,
+    "popularityRank": 8
+  },
+  {
+    "name": "Hyundai Venue",
+    "brand": "Hyundai",
+    "type": "PETROL",
+    "tankCapacity": 45,
+    "batteryCapacity": null,
+    "realWorldRange": 630,
+    "imageUrl": null,
+    "popularityRank": 9
+  },
+  {
+    "name": "Tata Nexon Petrol",
+    "brand": "Tata",
+    "type": "PETROL",
+    "tankCapacity": 44,
+    "batteryCapacity": null,
+    "realWorldRange": 620,
+    "imageUrl": null,
+    "popularityRank": 10
+  },
+  {
+    "name": "Tata Nexon EV",
+    "brand": "Tata",
+    "type": "EV",
+    "tankCapacity": null,
+    "batteryCapacity": 40.5,
+    "realWorldRange": 300,
+    "imageUrl": null,
+    "popularityRank": 11
+  },
+  {
+    "name": "Tata Punch",
+    "brand": "Tata",
+    "type": "PETROL",
+    "tankCapacity": 37,
+    "batteryCapacity": null,
+    "realWorldRange": 580,
+    "imageUrl": null,
+    "popularityRank": 12
+  },
+  {
+    "name": "Tata Tiago EV",
+    "brand": "Tata",
+    "type": "EV",
+    "tankCapacity": null,
+    "batteryCapacity": 24,
+    "realWorldRange": 200,
+    "imageUrl": null,
+    "popularityRank": 13
+  },
+  {
+    "name": "Tata Harrier",
+    "brand": "Tata",
+    "type": "DIESEL",
+    "tankCapacity": 50,
+    "batteryCapacity": null,
+    "realWorldRange": 750,
+    "imageUrl": null,
+    "popularityRank": 14
+  },
+  {
+    "name": "Mahindra XUV700 Diesel",
+    "brand": "Mahindra",
+    "type": "DIESEL",
+    "tankCapacity": 60,
+    "batteryCapacity": null,
+    "realWorldRange": 850,
+    "imageUrl": null,
+    "popularityRank": 15
+  },
+  {
+    "name": "Mahindra Thar Diesel",
+    "brand": "Mahindra",
+    "type": "DIESEL",
+    "tankCapacity": 57,
+    "batteryCapacity": null,
+    "realWorldRange": 700,
+    "imageUrl": null,
+    "popularityRank": 16
+  },
+  {
+    "name": "Mahindra Scorpio-N Diesel",
+    "brand": "Mahindra",
+    "type": "DIESEL",
+    "tankCapacity": 57,
+    "batteryCapacity": null,
+    "realWorldRange": 750,
+    "imageUrl": null,
+    "popularityRank": 17
+  },
+  {
+    "name": "Mahindra XUV400 EV",
+    "brand": "Mahindra",
+    "type": "EV",
+    "tankCapacity": null,
+    "batteryCapacity": 39.4,
+    "realWorldRange": 320,
+    "imageUrl": null,
+    "popularityRank": 18
+  },
+  {
+    "name": "Kia Seltos",
+    "brand": "Kia",
+    "type": "PETROL",
+    "tankCapacity": 50,
+    "batteryCapacity": null,
+    "realWorldRange": 650,
+    "imageUrl": null,
+    "popularityRank": 19
+  },
+  {
+    "name": "Kia Sonet",
+    "brand": "Kia",
+    "type": "PETROL",
+    "tankCapacity": 45,
+    "batteryCapacity": null,
+    "realWorldRange": 620,
+    "imageUrl": null,
+    "popularityRank": 20
+  },
+  {
+    "name": "Kia Carens",
+    "brand": "Kia",
+    "type": "PETROL",
+    "tankCapacity": 45,
+    "batteryCapacity": null,
+    "realWorldRange": 600,
+    "imageUrl": null,
+    "popularityRank": 21
+  },
+  {
+    "name": "Toyota Innova Crysta Diesel",
+    "brand": "Toyota",
+    "type": "DIESEL",
+    "tankCapacity": 55,
+    "batteryCapacity": null,
+    "realWorldRange": 750,
+    "imageUrl": null,
+    "popularityRank": 22
+  },
+  {
+    "name": "Toyota Innova Hycross",
+    "brand": "Toyota",
+    "type": "HYBRID",
+    "tankCapacity": 52,
+    "batteryCapacity": null,
+    "realWorldRange": 1000,
+    "imageUrl": null,
+    "popularityRank": 23
+  },
+  {
+    "name": "Toyota Fortuner Diesel",
+    "brand": "Toyota",
+    "type": "DIESEL",
+    "tankCapacity": 80,
+    "batteryCapacity": null,
+    "realWorldRange": 950,
+    "imageUrl": null,
+    "popularityRank": 24
+  },
+  {
+    "name": "Toyota Urban Cruiser Hyryder",
+    "brand": "Toyota",
+    "type": "HYBRID",
+    "tankCapacity": 45,
+    "batteryCapacity": null,
+    "realWorldRange": 900,
+    "imageUrl": null,
+    "popularityRank": 25
+  },
+  {
+    "name": "Honda City",
+    "brand": "Honda",
+    "type": "PETROL",
+    "tankCapacity": 40,
+    "batteryCapacity": null,
+    "realWorldRange": 640,
+    "imageUrl": null,
+    "popularityRank": 26
+  },
+  {
+    "name": "Honda Amaze",
+    "brand": "Honda",
+    "type": "PETROL",
+    "tankCapacity": 35,
+    "batteryCapacity": null,
+    "realWorldRange": 580,
+    "imageUrl": null,
+    "popularityRank": 27
+  },
+  {
+    "name": "Honda Elevate",
+    "brand": "Honda",
+    "type": "PETROL",
+    "tankCapacity": 40,
+    "batteryCapacity": null,
+    "realWorldRange": 600,
+    "imageUrl": null,
+    "popularityRank": 28
+  },
+  {
+    "name": "MG Hector",
+    "brand": "MG",
+    "type": "PETROL",
+    "tankCapacity": 60,
+    "batteryCapacity": null,
+    "realWorldRange": 660,
+    "imageUrl": null,
+    "popularityRank": 29
+  },
+  {
+    "name": "MG ZS EV",
+    "brand": "MG",
+    "type": "EV",
+    "tankCapacity": null,
+    "batteryCapacity": 50.3,
+    "realWorldRange": 360,
+    "imageUrl": null,
+    "popularityRank": 30
+  },
+  {
+    "name": "MG Astor",
+    "brand": "MG",
+    "type": "PETROL",
+    "tankCapacity": 45,
+    "batteryCapacity": null,
+    "realWorldRange": 600,
+    "imageUrl": null,
+    "popularityRank": 31
+  },
+  {
+    "name": "Skoda Slavia",
+    "brand": "Skoda",
+    "type": "PETROL",
+    "tankCapacity": 45,
+    "batteryCapacity": null,
+    "realWorldRange": 680,
+    "imageUrl": null,
+    "popularityRank": 32
+  },
+  {
+    "name": "Skoda Kushaq",
+    "brand": "Skoda",
+    "type": "PETROL",
+    "tankCapacity": 50,
+    "batteryCapacity": null,
+    "realWorldRange": 700,
+    "imageUrl": null,
+    "popularityRank": 33
+  },
+  {
+    "name": "Volkswagen Virtus",
+    "brand": "Volkswagen",
+    "type": "PETROL",
+    "tankCapacity": 45,
+    "batteryCapacity": null,
+    "realWorldRange": 680,
+    "imageUrl": null,
+    "popularityRank": 34
+  },
+  {
+    "name": "Volkswagen Taigun",
+    "brand": "Volkswagen",
+    "type": "PETROL",
+    "tankCapacity": 50,
+    "batteryCapacity": null,
+    "realWorldRange": 700,
+    "imageUrl": null,
+    "popularityRank": 35
+  },
+  {
+    "name": "BYD Atto 3",
+    "brand": "BYD",
+    "type": "EV",
+    "tankCapacity": null,
+    "batteryCapacity": 60.5,
+    "realWorldRange": 420,
+    "imageUrl": null,
+    "popularityRank": 36
+  },
+  {
+    "name": "BMW iX",
+    "brand": "BMW",
+    "type": "EV",
+    "tankCapacity": null,
+    "batteryCapacity": 76.6,
+    "realWorldRange": 450,
+    "imageUrl": null,
+    "popularityRank": 37
+  },
+  {
+    "name": "Mercedes-Benz EQS",
+    "brand": "Mercedes-Benz",
+    "type": "EV",
+    "tankCapacity": null,
+    "batteryCapacity": 107.8,
+    "realWorldRange": 600,
+    "imageUrl": null,
+    "popularityRank": 38
+  },
+  {
+    "name": "Renault Kiger",
+    "brand": "Renault",
+    "type": "PETROL",
+    "tankCapacity": 40,
+    "batteryCapacity": null,
+    "realWorldRange": 620,
+    "imageUrl": null,
+    "popularityRank": 39
+  },
+  {
+    "name": "Nissan Magnite",
+    "brand": "Nissan",
+    "type": "PETROL",
+    "tankCapacity": 40,
+    "batteryCapacity": null,
+    "realWorldRange": 620,
+    "imageUrl": null,
+    "popularityRank": 40
+  }
+]

@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vehicle {
+  id              String      @id @default(cuid())
+  name            String
+  brand           String
+  type            VehicleType
+  tankCapacity    Float?
+  batteryCapacity Float?
+  realWorldRange  Float
+  imageUrl        String?
+  popularityRank  Int         @default(0)
+  createdAt       DateTime    @default(now())
+}
+
+enum VehicleType {
+  PETROL
+  DIESEL
+  EV
+  HYBRID
+}
+
+model Checkpoint {
+  id                 String           @id @default(cuid())
+  name               String
+  type               CheckpointType[]
+  latitude           Float
+  longitude          Float
+  distanceFromDelhi  Float
+  highway            String           @default("NH48")
+  corridor           String           @default("DELHI_JAIPUR")
+  rating             Float?
+  reviewCount        Int?
+  hasFuel            Boolean          @default(false)
+  hasEVCharger       Boolean          @default(false)
+  evChargerType      String?
+  hasFood            Boolean          @default(false)
+  hasCleanRestroom   Boolean          @default(false)
+  hasParking         Boolean          @default(false)
+  isFamilyFriendly   Boolean          @default(false)
+  description        String?
+  highlights         String[]
+  imageUrl           String?
+  createdAt          DateTime         @default(now())
+}
+
+enum CheckpointType {
+  FUEL
+  EV_CHARGING
+  DHABA
+  RESTAURANT
+  REST_AREA
+  CAFE
+}
