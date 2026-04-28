@@ -6,10 +6,13 @@ import { PrismaService } from "../../prisma/prisma.service";
 export class CheckpointsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listByCorridor(corridor: string): Promise<Checkpoint[]> {
+  async listActive(params?: { take?: number; skip?: number }): Promise<Checkpoint[]> {
+    const { take, skip } = params ?? {};
     return this.prisma.checkpoint.findMany({
-      where: { corridor },
-      orderBy: { distanceFromDelhi: "asc" }
+      where: { isActive: true },
+      orderBy: { lastVerifiedAt: "desc" },
+      take,
+      skip
     });
   }
 }

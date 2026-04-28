@@ -57,10 +57,72 @@ export function calculateTripEta(
   };
 }
 
+export type TimedCheckpoint = {
+  distanceFromOriginKm: number;
+  stopDurationMinutes: number;
+};
+
+export type TimedCheckpointResult = {
+  distanceFromPreviousKm: number;
+  drivingTimeFromStartMinutes: number;
+  stopDurationMinutes: number;
+  arrivalTimeIso: string;
+  departureTimeIso: string;
+};
+
+/**
+ * Calculates arrival/departure times for checkpoints and final arrival time.
+ *
+ * Notes:
+ * - Uses distance-proportional interpolation for driving time; for better accuracy
+ *   this can be replaced later with leg-walking on Google Directions `legs/steps`.
+ * - Adds stop durations cumulatively.
+ */
+export function calculateETAs(params: {
+  departureTime: Date;
+  totalDistanceKm: number;
+  totalDurationMinutes: number;
+  checkpoints: TimedCheckpoint[];
+}): { checkpoints: TimedCheckpointResult[]; estimatedArrivalIso: string; totalDurationMinutes: number } {
+  const results: TimedCheckpointResult[] = [];
+  let cumulativeStop = 0;
+  let prevDistance = 0;
+
+  for (const cp of params.checkpoints) {
+    const driving = Math.round((cp.distanceFromOriginKm / params.totalDistanceKm) * params.totalDurationMinutes);
+    const arrival = addMinutes(params.departureTime, driving + cumulativeStop);
+    const departure = addMinutes(arrival, cp.stopDurationMinutes);
+
+    results.push({
+      distanceFromPreviousKm: round2(cp.distanceFromOriginKm - prevDistance),
+      drivingTimeFromStartMinutes: driving,
+      stopDurationMinutes: cp.stopDurationMinutes,
+      arrivalTimeIso: arrival.toISOString(),
+      departureTimeIso: departure.toISOString()
+    });
+
+    prevDistance = cp.distanceFromOriginKm;
+    cumulativeStop += cp.stopDurationMinutes;
+  }
+
+  const totalDurationWithStops = Math.round(params.totalDurationMinutes + cumulativeStop);
+  const estimatedArrival = addMinutes(params.departureTime, totalDurationWithStops);
+
+  return {
+    checkpoints: results,
+    estimatedArrivalIso: estimatedArrival.toISOString(),
+    totalDurationMinutes: totalDurationWithStops
+  };
+}
+
 function kmToMinutes(distanceKm: number, avgSpeedKmph: number): number {
   return (distanceKm / avgSpeedKmph) * 60;
 }
 
 function round2(value: number): number {
   return Math.round(value * 100) / 100;
+}
+
+function addMinutes(date: Date, minutes: number): Date {
+  return new Date(date.getTime() + minutes * 60_000);
 }

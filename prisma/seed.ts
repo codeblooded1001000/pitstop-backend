@@ -14,13 +14,11 @@ type VehicleSeedRecord = {
 };
 
 type CheckpointSeedRecord = {
+  googlePlaceId?: string | null;
   name: string;
   type: CheckpointType[];
   latitude: number;
   longitude: number;
-  distanceFromDelhi: number;
-  highway?: string;
-  corridor?: string;
   rating?: number | null;
   reviewCount?: number | null;
   hasFuel?: boolean;
@@ -79,6 +77,18 @@ function assertCheckpointTypes(values: string[]): CheckpointType[] {
   });
 }
 
+function suggestedStopDurationMinutes(types: CheckpointType[]): number {
+  const perType: Record<CheckpointType, number> = {
+    [CheckpointType.FUEL]: 10,
+    [CheckpointType.EV_CHARGING]: 30,
+    [CheckpointType.CAFE]: 15,
+    [CheckpointType.DHABA]: 30,
+    [CheckpointType.RESTAURANT]: 30,
+    [CheckpointType.REST_AREA]: 15
+  };
+  return Math.max(...types.map((t) => perType[t] ?? 15), 15);
+}
+
 async function main(): Promise<void> {
   const vehiclesRaw = readJsonFileWithFallback<Array<Record<string, unknown>>>("vehicles.json");
   const checkpointsRaw = readJsonFileWithFallback<Array<Record<string, unknown>>>("checkpoints.json");
@@ -95,13 +105,11 @@ async function main(): Promise<void> {
   }));
 
   const checkpoints: CheckpointSeedRecord[] = checkpointsRaw.map((item) => ({
+    googlePlaceId: (item.googlePlaceId as string | null | undefined) ?? null,
     name: String(item.name),
     type: assertCheckpointTypes(((item.type ?? item.types) as string[]) ?? []),
     latitude: Number(item.latitude),
     longitude: Number(item.longitude),
-    distanceFromDelhi: Number(item.distanceFromDelhi),
-    highway: String(item.highway ?? "NH48"),
-    corridor: String(item.corridor ?? "DELHI_JAIPUR"),
     rating: (item.rating as number | null | undefined) ?? null,
     reviewCount: (item.reviewCount as number | null | undefined) ?? null,
     hasFuel: Boolean(item.hasFuel ?? false),
@@ -126,11 +134,75 @@ async function main(): Promise<void> {
   }
 
   if (checkpoints.length > 0) {
-    await prisma.checkpoint.createMany({ data: checkpoints });
+    const now = new Date();
+    await prisma.checkpoint.createMany({
+      data: checkpoints.map((c) => ({
+        googlePlaceId: c.googlePlaceId ?? null,
+        name: c.name,
+        type: c.type,
+        latitude: c.latitude,
+        longitude: c.longitude,
+        rating: c.rating ?? null,
+        reviewCount: c.reviewCount ?? null,
+        hasFuel: Boolean(c.hasFuel ?? false),
+        hasEVCharger: Boolean(c.hasEVCharger ?? false),
+        evChargerType: c.evChargerType ?? null,
+        hasFood: Boolean(c.hasFood ?? false),
+        hasCleanRestroom: Boolean(c.hasCleanRestroom ?? false),
+        hasParking: Boolean(c.hasParking ?? false),
+        isFamilyFriendly: Boolean(c.isFamilyFriendly ?? false),
+        description: c.description ?? null,
+        highlights: c.highlights ?? [],
+        imageUrl: c.imageUrl ?? null,
+        source: "MANUAL",
+        lastVerifiedAt: now,
+        isActive: true,
+        suggestedStopDuration: suggestedStopDurationMinutes(c.type)
+      }))
+    });
   }
 
+  await seedFuelPriceOverrides();
+
   // eslint-disable-next-line no-console
-  console.log(`Seeded ${vehicles.length} vehicles and ${checkpoints.length} checkpoints`);
+  console.log(`Seeded ${vehicles.length} vehicles, ${checkpoints.length} checkpoints, and fuel price overrides`);
+}
+
+async function seedFuelPriceOverrides(): Promise<void> {
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const defaults: Array<{ fuelType: VehicleType; pricePerUnit: number; unit: string }> = [
+    { fuelType: VehicleType.PETROL, pricePerUnit: 95, unit: "LITER" },
+    { fuelType: VehicleType.DIESEL, pricePerUnit: 88, unit: "LITER" },
+    { fuelType: VehicleType.EV, pricePerUnit: 8, unit: "KWH" },
+    { fuelType: VehicleType.HYBRID, pricePerUnit: 95, unit: "LITER" },
+    { fuelType: VehicleType.CNG, pricePerUnit: 78, unit: "KG" }
+  ];
+
+  try {
+    await prisma.fuelPriceOverride.deleteMany({
+      where: {
+        region: "INDIA_AVG",
+        source: "seed-default"
+      }
+    });
+
+    await prisma.fuelPriceOverride.createMany({
+      data: defaults.map((item) => ({
+        fuelType: item.fuelType,
+        region: "INDIA_AVG",
+        pricePerUnit: item.pricePerUnit,
+        unit: item.unit,
+        source: "seed-default",
+        expiresAt
+      }))
+    });
+  } catch (error: unknown) {
+    const code = (error as { code?: string }).code;
+    if (code !== "P2021") {
+      throw error;
+    }
+    // Table doesn't exist yet; keep seed backward-compatible.
+  }
 }
 
 main()

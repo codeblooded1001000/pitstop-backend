@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
 }
 
 model Vehicle {
@@ -18,6 +20,10 @@ model Vehicle {
   imageUrl        String?
   popularityRank  Int         @default(0)
   createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([popularityRank])
+  @@index([type])
 }
 
 enum VehicleType {
@@ -25,30 +31,45 @@ enum VehicleType {
   DIESEL
   EV
   HYBRID
+  CNG
 }
 
 model Checkpoint {
-  id                 String           @id @default(cuid())
-  name               String
-  type               CheckpointType[]
-  latitude           Float
-  longitude          Float
-  distanceFromDelhi  Float
-  highway            String           @default("NH48")
-  corridor           String           @default("DELHI_JAIPUR")
-  rating             Float?
-  reviewCount        Int?
-  hasFuel            Boolean          @default(false)
-  hasEVCharger       Boolean          @default(false)
-  evChargerType      String?
-  hasFood            Boolean          @default(false)
-  hasCleanRestroom   Boolean          @default(false)
-  hasParking         Boolean          @default(false)
-  isFamilyFriendly   Boolean          @default(false)
-  description        String?
-  highlights         String[]
-  imageUrl           String?
-  createdAt          DateTime         @default(now())
+  id            String           @id @default(cuid())
+  googlePlaceId String?          @unique
+  name          String
+  type          CheckpointType[]
+  latitude      Float
+  longitude     Float
+
+  rating      Float?
+  reviewCount Int?
+
+  hasFuel          Boolean @default(false)
+  hasEVCharger     Boolean @default(false)
+  evChargerType    String?
+  hasFood          Boolean @default(false)
+  hasCleanRestroom Boolean @default(false)
+  hasParking       Boolean @default(false)
+  isFamilyFriendly Boolean @default(false)
+
+  description String?
+  fullAddress String?
+  googleMapsResponse Json?
+  highlights  String[]
+  imageUrl    String?
+
+  source                String   @default("GOOGLE_PLACES")
+  lastVerifiedAt        DateTime @default(now())
+  isActive              Boolean  @default(true)
+  suggestedStopDuration Int      @default(15)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([latitude, longitude])
+  @@index([isActive])
+  @@index([lastVerifiedAt])
 }
 
 enum CheckpointType {
@@ -58,4 +79,60 @@ enum CheckpointType {
   RESTAURANT
   REST_AREA
   CAFE
+}
+
+model Route {
+  id                 String   @id @default(cuid())
+  routeHash          String   @unique
+  originLat          Float
+  originLng          Float
+  destinationLat     Float
+  destinationLng     Float
+  originAddress      String?
+  destinationAddress String?
+  distanceMeters     Int
+  durationSeconds    Int
+  encodedPolyline    String   @db.Text
+  legs               Json
+  fetchedAt          DateTime @default(now())
+  expiresAt          DateTime
+
+  @@index([routeHash])
+  @@index([expiresAt])
+}
+
+model TripPlan {
+  id                    String   @id @default(cuid())
+  routeId               String
+  vehicleId             String
+  fuelPercent           Float
+  departureTime         DateTime
+  selectedCheckpointIds String[]
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([routeId])
+}
+
+model CheckpointFeedback {
+  id           String   @id @default(cuid())
+  checkpointId String
+  reason       String
+  comment      String?
+  createdAt    DateTime @default(now())
+
+  @@index([checkpointId])
+}
+
+model FuelPriceOverride {
+  id           String      @id @default(cuid())
+  fuelType     VehicleType
+  region       String      @default("INDIA_AVG")
+  pricePerUnit Float
+  unit         String      @default("LITER") // LITER | KG | KWH
+  source       String?
+  createdAt    DateTime    @default(now())
+  expiresAt    DateTime
+
+  @@index([fuelType, region, expiresAt])
 }

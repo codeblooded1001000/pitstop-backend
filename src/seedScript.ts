@@ -16,13 +16,11 @@ interface VehicleSeed {
 }
 
 interface CheckpointSeed {
+  googlePlaceId?: string | null;
   name: string;
   types: Array<'FUEL' | 'EV_CHARGING' | 'DHABA' | 'RESTAURANT' | 'REST_AREA' | 'CAFE'>;
   latitude: number;
   longitude: number;
-  distanceFromDelhi: number;
-  highway: string;
-  corridor: string;
   rating: number | null;
   reviewCount: number | null;
   hasFuel: boolean;
@@ -35,6 +33,18 @@ interface CheckpointSeed {
   description: string | null;
   highlights: string[];
   imageUrl: string | null;
+}
+
+function suggestedStopDurationMinutes(types: CheckpointSeed["types"]): number {
+  const perType: Record<CheckpointSeed["types"][number], number> = {
+    FUEL: 10,
+    EV_CHARGING: 30,
+    CAFE: 15,
+    DHABA: 30,
+    RESTAURANT: 30,
+    REST_AREA: 15,
+  };
+  return Math.max(...types.map((t) => perType[t] ?? 15), 15);
 }
 
 function loadJson<T>(filename: string): T {
@@ -94,19 +104,17 @@ async function seedCheckpoints() {
   const checkpoints = loadJson<CheckpointSeed[]>('checkpoints.json');
 
   // Clear existing
-  await prisma.checkpoint.deleteMany({});
+  // await prisma.checkpoint.deleteMany({});
 
   let count = 0;
   for (const c of checkpoints) {
     await prisma.checkpoint.create({
       data: {
+        googlePlaceId: c.googlePlaceId ?? null,
         name: c.name,
         type: c.types,
         latitude: c.latitude,
         longitude: c.longitude,
-        distanceFromDelhi: c.distanceFromDelhi,
-        highway: c.highway,
-        corridor: c.corridor,
         rating: c.rating,
         reviewCount: c.reviewCount,
         hasFuel: c.hasFuel,
@@ -119,6 +127,10 @@ async function seedCheckpoints() {
         description: c.description,
         highlights: c.highlights,
         imageUrl: c.imageUrl,
+        source: 'MANUAL',
+        lastVerifiedAt: new Date(),
+        isActive: true,
+        suggestedStopDuration: suggestedStopDurationMinutes(c.types),
       },
     });
     count++;

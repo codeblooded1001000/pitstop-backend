@@ -24,3 +24,15 @@ pnpm-debug.log*
 
 prisma/*.db
 prisma/*.db-journal
+
+seed-checkpoints.ts
+
+
+
+scripts/
+
+corridors.ts
+
+seed-data/
+
+seedScript.ts

@@ -5,24 +5,22 @@ Backend API for **Pitstop** - "Long drives, broken down beautifully."
 ## Stack
 
 - NestJS (TypeScript)
-- PostgreSQL + PostGIS
+- PostgreSQL + PostGIS (required for v2 route buffering)
 - Prisma ORM
-- Redis-ready architecture (optional to add cache later)
+- Redis (caching + BullMQ)
+- Google Maps Platform APIs (Geocoding, Directions, Places)
 
-## Implemented V1
+## Implemented V2 (current)
 
-- Delhi -> Jaipur corridor trip planning
-- `POST /api/trip/plan` endpoint
-- Vehicle and checkpoint modules
-- Pure algorithm utilities for:
-  - range calculation
-  - checkpoint ranking
-  - ETA calculation
-- Prisma seed script loading data from:
-  - `prisma/data/vehicles.json`
-  - `prisma/data/checkpoints.json`
-- Input validation with `class-validator`
-- CORS enabled globally
+- Any origin → any destination trip planning via Google Directions
+- Route caching in DB (`Route`) with TTL
+- Checkpoints filtered within 5km of route polyline (PostGIS)
+- Checkpoint selection + ETA calculation utilities
+- Editable trip plans (`TripPlan`) with add/remove checkpoint endpoints
+- Background POI ingestion job (BullMQ) to upsert checkpoints from Google Places
+- Places helpers: geocode + autocomplete (cached)
+- Feedback endpoint for checkpoint flagging
+- CORS enabled globally, validation via `class-validator`
 
 ## Setup
 
@@ -38,19 +36,27 @@ npm install
 cp .env.example .env
 ```
 
-3. Run migrations
+3. Ensure PostGIS is available, then enable it
+
+Your Postgres must have PostGIS installed. Then run:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS postgis;
+```
+
+4. Run migrations
 
 ```bash
 npm run prisma:migrate
 ```
 
-4. Seed data
+5. Seed data (vehicles + curated manual checkpoints)
 
 ```bash
 npm run prisma:seed
 ```
 
-5. Start server
+6. Start server
 
 ```bash
 npm run start:dev
@@ -60,20 +66,95 @@ API runs at `http://localhost:3000` with global prefix `/api`.
 
 ## API
 
+### POST `/api/trip/estimate`
+
+Lightweight "Trip at a Glance" estimate. Does **not** create a `TripPlan`.
+
+```bash
+curl -X POST "http://localhost:3000/api/trip/estimate" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "origin": { "lat": 28.6139, "lng": 77.2090, "address": "Connaught Place, New Delhi" },
+    "destination": { "address": "Jaipur, Rajasthan" },
+    "vehicleId": "YOUR_VEHICLE_ID",
+    "fuelPercent": 80,
+    "departureTime": "2026-04-28T06:00:00Z"
+  }'
+```
+
 ### POST `/api/trip/plan`
 
 Request:
 
 ```json
 {
-  "vehicleId": "string",
+  "origin": { "lat": 28.6139, "lng": 77.2090, "address": "Connaught Place, New Delhi" },
+  "destination": { "address": "Jaipur, Rajasthan" },
+  "vehicleId": "clx123...",
   "fuelPercent": 60,
-  "departureTime": "2026-04-27T08:00:00Z",
-  "corridor": "DELHI_JAIPUR"
+  "departureTime": "2026-04-28T08:00:00Z",
+  "preferences": { "maxCheckpoints": 5, "prioritize": ["FOOD", "FUEL"] }
 }
 ```
 
-Returns trip details, selected checkpoints, ETAs, and a Google Maps deep link.
+Returns a persisted trip plan (id), route polyline, checkpoints, ETAs, and a Google Maps deep link.
+
+### POST `/api/trip/:tripPlanId/add-checkpoint`
+
+```json
+{ "checkpointId": "clx999..." }
+```
+
+### POST `/api/trip/:tripPlanId/remove-checkpoint`
+
+```json
+{ "checkpointId": "clx999..." }
+```
+
+### GET `/api/trip/:tripPlanId/nearby-checkpoints`
+
+Returns checkpoints along the cached route not currently selected.
+
+### POST `/api/places/geocode`
+
+```json
+{ "address": "Karol Bagh, New Delhi" }
+```
+
+### POST `/api/places/autocomplete`
+
+```json
+{ "input": "Jaip", "sessionToken": "uuid-from-frontend" }
+```
+
+### POST `/api/admin/fetch-pois`
+
+```json
+{ "encodedPolyline": "..." }
+```
+
+### POST `/api/feedback/checkpoint`
+
+```json
+{ "checkpointId": "clx111...", "reason": "WRONG_LOCATION", "comment": "Moved to the other side of the highway" }
+```
+
+### POST `/api/admin/fuel-price`
+
+Creates a DB override so you can update prices without redeploying.
+
+```bash
+curl -X POST "http://localhost:3000/api/admin/fuel-price" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fuelType": "PETROL",
+    "region": "INDIA_AVG",
+    "pricePerUnit": 95,
+    "unit": "LITER",
+    "source": "manual",
+    "expiresAt": "2026-05-28T00:00:00Z"
+  }'
+```
 
 ## Seed Data Format
 
@@ -103,9 +184,6 @@ Returns trip details, selected checkpoints, ETAs, and a Google Maps deep link.
     "type": ["DHABA", "FUEL"],
     "latitude": 29.04,
     "longitude": 77.06,
-    "distanceFromDelhi": 50,
-    "highway": "NH48",
-    "corridor": "DELHI_JAIPUR",
     "rating": 4.4,
     "reviewCount": 12000,
     "hasFuel": true,
